@@ -1,22 +1,36 @@
+import { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import Index from './components/Index';
+
+import {
+  AppBar,
+  Container,
+  Toolbar,
+  Typography,
+} from '@material-ui/core';
+
+
 function App() {
+  const [newGame, setNewGame] = useState(false);
+  const [game, setGame] = useState({});
   return (
-    <div className="App">
+    <div lassName="App">
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h6" noWrap>
+            Bowling
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Index
+          newGame={newGame}
+          setNewGame={setNewGame}
+          game={game}
+          setGame={setGame}
+        />
       </header>
     </div>
   );
