@@ -8,6 +8,7 @@ import {
 import { PlayCircleFilled } from '@material-ui/icons';
 
 import { saveShot, nextPlayer } from '../../actions/gameActions';
+import Winner from './Winner';
 
 const Game = () => {
   const store = useStore();
@@ -40,6 +41,7 @@ const Game = () => {
   };
 
   const playRound = (player, round, shot) => {
+    console.log(round, shot)
     if (round === 11) {
       setShowWinner(true);
       getPins();
@@ -76,7 +78,7 @@ const Game = () => {
     return player.shift().color;
   }
 
-  return (
+  let component = (
     <>
       <Table
         active={false}
@@ -111,6 +113,22 @@ const Game = () => {
         active={true}
         players={activePlayer}
       />
+    </>
+  );
+
+  if (round === 11) {
+    component = (
+      <>
+        <Winner
+          players={players}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {component}
     </>
   )
 }

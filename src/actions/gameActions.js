@@ -1,5 +1,25 @@
 import { ACTIONS } from '../models/constants';
 
+const values = {
+  0: '-',
+  1: '1',
+  2: '2',
+  3: '3',
+  4: '4',
+  5: '5',
+  6: '6',
+  7: '7',
+  8: '8',
+  9: '9',
+  10: 'X',
+};
+
+const getTotal = (rounds, round) => {
+  return rounds.filter(rd => rd.id === round).shift();
+};
+
+
+
 const startGameSuccess = data => ({ type: ACTIONS.GAME.START_GAME, data });
 const saveShotSuccess = data => ({ type: ACTIONS.GAME.SAVE_SHOT, data });
 const nextPlayerSuccess = next => ({ type: ACTIONS.GAME.NEXT_PLAYER, next });
@@ -74,6 +94,13 @@ export function saveShot(player, round, shot, points) {
         return rd.score.map(ch => {
           if (parseInt(ch.shot) === parseInt(shot)) {
             ch.score = points;
+            ch.value = values[points];
+            rd.total += points;
+            if (round > 1 && shot === 2) {
+              const sum = getTotal(newPlayer.rounds, parseInt(round) - 1).total || 0;
+              const total = sum + rd.total;
+              rd.total = total;
+            }
             return ch;
           }
           return ch;

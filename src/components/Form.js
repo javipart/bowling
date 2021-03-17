@@ -40,15 +40,6 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const colors = [
-  'red',
-  'blue',
-  'yellow',
-  'grey',
-  'green',
-  'orange',
-];
-
 const Form = ({ setNewGame }) => {
   const store = useStore();
   const dispatch = useDispatch();
@@ -63,13 +54,20 @@ const Form = ({ setNewGame }) => {
   const [formOk, setFormOk] = useState(false);
   const [showRoom, setShowRoom] = useState(false);
   const [colorPlayer, setColorPlayer] = useState({});
+  const [colors, setColors] = useState([
+    'red',
+    'blue',
+    'yellow',
+    'grey',
+    'green',
+    'orange',
+  ]);
 
   useEffect(() => {
     generateInputs();
   }, []);
 
   const handleSubmit = (game = false) => {
-    console.log(colorPlayer)
     if (game) {
       const isValid = true;
       if (!isValid) {
@@ -94,7 +92,7 @@ const Form = ({ setNewGame }) => {
   const handlePlayers = (e) => {
     const { id, value } = e.target;
     dispatch(setDataPlayers(id, value));
-    if (validateNames().length === 0) {
+    if (validateNames().length === maxPlayers) {
       setFormOk(true);
     } else {
       setFormOk(false);
@@ -103,6 +101,7 @@ const Form = ({ setNewGame }) => {
 
   const handleColor = (e) => {
     const { name, value } = e.target;
+    const newColors = colors.filter(cl => cl !== value);
     setColorPlayer(prev => ({ ...prev, [name]: value }));
   }
 
@@ -113,32 +112,40 @@ const Form = ({ setNewGame }) => {
       let labelInput = `Player ${i}`;
       newInputs.push(
         <>
-          <TextField
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            required
-            id={idInput}
-            label={labelInput}
-            name={idInput}
-            autoComplete="name"
-            autoFocus
-            value={players.selected[idInput]}
-            onChange={handlePlayers}
-          />
-          <InputLabel id={`color${i}`}>Color</InputLabel>
-          <Select
-            fullWidth
-            variant={'outlined'}
-            labelId={`color${i}`}
-            name={`player${i}`}
-            value={colorPlayer[`player${i}`]}
-            onChange={handleColor}
-          >
-            {colors.map(color => (
-              <MenuItem value={color}>{color}</MenuItem>
-            ))}
-          </Select>
+          <Grid container>
+            <Grid item xs={7}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                margin="normal"
+                required
+                id={idInput}
+                label={labelInput}
+                name={idInput}
+                autoComplete="name"
+                autoFocus
+                value={players.selected[idInput]}
+                onChange={handlePlayers}
+              />
+            </Grid>
+            <Grid item xs={1}>
+            </Grid>
+            <Grid item xs={4}>
+              <InputLabel id={`color${i}`}>Color</InputLabel>
+              <Select
+                fullWidth
+                variant={'outlined'}
+                labelId={`color${i}`}
+                name={`player${i}`}
+                value={colorPlayer[`player${i}`]}
+                onChange={handleColor}
+              >
+                {colors.map(color => (
+                  <MenuItem value={color}>{color}</MenuItem>
+                ))}
+              </Select>
+            </Grid>
+          </Grid>
         </>
       )
     }
@@ -151,7 +158,7 @@ const Form = ({ setNewGame }) => {
     for (let i = 1; i <= maxPlayers; i++) {
       names.push(selected[`player${i}`]);
     }
-    const isOk = names.filter(name => !name && name === '');
+    const isOk = names.filter(name => name && name !== '');
     return isOk;
   }
 
@@ -175,7 +182,7 @@ const Form = ({ setNewGame }) => {
             variant="contained"
             color="primary"
             className={classes.submit}
-            disabled={!formOk}
+            disabled={!formOk || Object.keys(colorPlayer).length !== maxPlayers}
             onClick={() => handleSubmit(true)}
           >
             Start
