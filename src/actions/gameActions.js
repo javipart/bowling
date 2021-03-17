@@ -26,7 +26,6 @@ const nextPlayerSuccess = next => ({ type: ACTIONS.GAME.NEXT_PLAYER, next });
 
 export function setDataGame(players) {
   return (dispatch) => {
-    console.log(players)
     const initialData = players.map(player => {
       player.rounds = [
         {

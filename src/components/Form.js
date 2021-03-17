@@ -54,6 +54,7 @@ const Form = ({ setNewGame }) => {
   const [formOk, setFormOk] = useState(false);
   const [showRoom, setShowRoom] = useState(false);
   const [colorPlayer, setColorPlayer] = useState({});
+  const [dataPlayersInitial, setDataPlayersInitial] = useState({});
   const [colors, setColors] = useState([
     'red',
     'blue',
@@ -81,8 +82,21 @@ const Form = ({ setNewGame }) => {
             color: colorPlayer[prop],
           })
         }
-        dispatch(setDataGame(gamePlayers));
-        setShowRoom(true);
+        let ocurrences = {};
+        const cls = gamePlayers.filter(function (gp) {
+          if (ocurrences[gp.color]) {
+            return false;
+          }
+          ocurrences[gp.color] = true;
+          return true;
+        });
+        if (cls.length !== maxPlayers) {
+          setError('Same colors not allowed');
+        } else {
+          dispatch(setDataGame(gamePlayers));
+          setDataPlayersInitial(gamePlayers);
+          setShowRoom(true);
+        }
       }
     } else {
       setNewGame(false);
@@ -91,17 +105,16 @@ const Form = ({ setNewGame }) => {
 
   const handlePlayers = (e) => {
     const { id, value } = e.target;
-    dispatch(setDataPlayers(id, value));
     if (validateNames().length === maxPlayers) {
       setFormOk(true);
     } else {
       setFormOk(false);
     }
+    dispatch(setDataPlayers(id, value));
   }
 
   const handleColor = (e) => {
     const { name, value } = e.target;
-    const newColors = colors.filter(cl => cl !== value);
     setColorPlayer(prev => ({ ...prev, [name]: value }));
   }
 
@@ -164,7 +177,9 @@ const Form = ({ setNewGame }) => {
 
   if (showRoom) {
     return (
-      <Game />
+      <Game
+        dataPlayers={dataPlayersInitial}
+      />
     )
   }
 

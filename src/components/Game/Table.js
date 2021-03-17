@@ -5,6 +5,7 @@ import './Table.css'
 const Table = ({
   players,
   active,
+  winner,
 }) => {
   const [titles, setTitles] = useState([]);
 
@@ -42,7 +43,7 @@ const Table = ({
   return (
     <div id='scorecard'>
       {players.map((player) => (
-        <>
+        <div style={{ backgroundColor: winner === player.id ? 'green' : '' }}>
           <span style={{ float: 'center', color: 'white', backgroundColor: player.color, opacity: active ? '' : '50%' }}>
             {player.name}
           </span>
@@ -52,7 +53,7 @@ const Table = ({
             </tr>
             {mountTables(player)}
           </table>
-        </>
+        </div>
       ))}
     </div>
   )
