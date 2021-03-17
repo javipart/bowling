@@ -24,7 +24,7 @@ const Table = ({
       <tr>
         {player.rounds.map((round, i) => (
           round.score.map((r, j) => (
-            <td id={`frame${i + 1}${j}`} colSpan={3}>{r.score}</td>
+            <td id={`frame${i + 1}${j}`} colSpan={3}>{r.value}</td>
           ))
         ))}
       </tr>

@@ -47,23 +47,25 @@ const Game = ({ dataPlayers }) => {
 
   const playRound = (player, round, shot) => {
     setRunning(true);
+    let newPins = [];
     if (round === 11) {
       getPins();
     } else {
-      const newPins = pins.filter(p => p.status)
+      const pinsCopy = JSON.parse(JSON.stringify(pins));
+      newPins = pinsCopy.filter(p => p.status)
         .map(pin => {
           pin.status = Math.round(Math.random() * 1);
           return pin;
         });
-      setPins(newPins);
-      const points = newPins.filter(p => !p.status).length;
       setTimeout(() => {
-        if (points === 10) {
+        if (newPins.filter(p => !p.status).length === 10) {
           setStrike(true);
         }
         setLastBall(true);
       }, 2000)
       setTimeout(() => {
+        const points = newPins.filter(p => !p.status).length;
+        setPins(newPins);
         dispatch(saveShot(player, round, shot, points));
         if (round === 10 && shot === 2) {
           getPins();

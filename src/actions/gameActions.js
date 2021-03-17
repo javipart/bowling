@@ -95,6 +95,9 @@ export function saveShot(player, round, shot, points) {
             ch.score = points;
             ch.value = values[points];
             rd.total += points;
+            if(rd.total === 10) {
+              ch.value = '/';
+            }
             if (round > 1 && shot === 2) {
               const sum = getTotal(newPlayer.rounds, parseInt(round) - 1).total || 0;
               const total = sum + rd.total;
