@@ -1,28 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-
-import {
-  Button,
-} from '@material-ui/core';
-
 import './Table.css'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper,
-  },
-  gridList: {
-    width: 500,
-    height: 450,
-  },
-}));
 const Table = ({
-  players
+  players,
+  active,
 }) => {
   const [titles, setTitles] = useState([]);
 
@@ -30,30 +12,28 @@ const Table = ({
     let allTitles = [];
     for (let i = 1; i <= 10; i++) {
       allTitles.push(
-        <th colSpan={6}>{i}</th>
+        <th colSpan={i === 10 ? 9 : 6}>{i}</th>
       )
     }
     setTitles(allTitles)
   };
 
-  const mountTables = () => {
-    return players.map(player => (
-      <>
-        <tr>
-          {player.rounds.map((round, i) => (
-            round.score.map((r, j) => (
-              <td id={`frame${i}${j}`} colSpan={3}>{r.score}</td>
-            ))
-          ))}
-        </tr>
-        <tr>
-          {player.rounds.map((round, i) => (
-            <td id={`marker${i}`} colSpan={6}>{round.total}</td>
-          ))}
-        </tr>
-      </>
-    ))
-  };
+  const mountTables = (player) => (
+    <>
+      <tr>
+        {player.rounds.map((round, i) => (
+          round.score.map((r, j) => (
+            <td id={`frame${i + 1}${j}`} colSpan={3}>{r.score}</td>
+          ))
+        ))}
+      </tr>
+      <tr>
+        {player.rounds.map((round, i) => (
+          <td id={`marker${i + 1}`} colSpan={6}>{round.total}</td>
+        ))}
+      </tr>
+    </>
+  );
 
   useEffect(() => {
     getTitles()
@@ -61,12 +41,19 @@ const Table = ({
 
   return (
     <div id='scorecard'>
-      <table id='scorecardTable' className='scorecard' cellPadding={1} cellSpacing={0}>
-        <tr>
-          {titles}
-        </tr>
-        {mountTables()}
-      </table>
+      {players.map((player) => (
+        <>
+          <span style={{ float: 'center', color: 'white', backgroundColor: player.color, opacity: active ? '' : '50%' }}>
+            {player.name}
+          </span>
+          <table id='scorecardTable' className='scorecard' cellPadding={1} cellSpacing={0}>
+            <tr>
+              {titles}
+            </tr>
+            {mountTables(player)}
+          </table>
+        </>
+      ))}
     </div>
   )
 }
