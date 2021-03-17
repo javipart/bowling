@@ -10,6 +10,8 @@ import { Close } from '@material-ui/icons';
 import { saveShot, nextPlayer } from '../../actions/gameActions';
 import Winner from './Winner';
 
+import img from '../../assets/strike.gif';
+
 const Game = ({ dataPlayers }) => {
   const store = useStore();
   const dispatch = useDispatch();
@@ -20,6 +22,7 @@ const Game = ({ dataPlayers }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [lastBall, setLastBall] = useState(false);
   const [running, setRunning] = useState(false);
+  const [strike, setStrike] = useState(false);
 
   const game = useSelector((state = store.getState()) => state.game);
   const { players, idTurn } = game;
@@ -47,23 +50,27 @@ const Game = ({ dataPlayers }) => {
     if (round === 11) {
       getPins();
     } else {
+      const newPins = pins.filter(p => p.status)
+        .map(pin => {
+          pin.status = Math.round(Math.random() * 1);
+          return pin;
+        });
+      setPins(newPins);
+      const points = newPins.filter(p => !p.status).length;
       setTimeout(() => {
+        if (points === 10) {
+          setStrike(true);
+        }
         setLastBall(true);
       }, 2000)
       setTimeout(() => {
-        const newPins = pins.filter(p => p.status)
-          .map(pin => {
-            pin.status = Math.round(Math.random() * 1);
-            return pin;
-          });
-        setPins(newPins);
-        const points = newPins.filter(p => !p.status).length;
         dispatch(saveShot(player, round, shot, points));
         if (round === 10 && shot === 2) {
           getPins();
           setShot(shot + 1)
           setLastBall(false);
           setRunning(false);
+          setStrike(false);
         } else {
           if (shot === 2 && round !== 10) {
             dispatch(nextPlayer(player.id, setRound, round));
@@ -71,10 +78,12 @@ const Game = ({ dataPlayers }) => {
             setShot(1);
             setLastBall(false);
             setRunning(false);
+            setStrike(false);
           } else {
             setShot(shot + 1)
             setLastBall(false);
             setRunning(false);
+            setStrike(false);
           }
           if (round === 10 && shot === 3) {
             dispatch(nextPlayer(player.id, setRound, round));
@@ -131,6 +140,11 @@ const Game = ({ dataPlayers }) => {
                 <div id={pin.id}>
                 </div>
               ))}
+            {strike
+              ? (
+                <img src={img} style={{ maxHeight: '160px', maxWidth: '160px', bottom: '300px' }} />
+              )
+              : null}
           </div>
         </Grid>
         <Grid item xs={1}>
